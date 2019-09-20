@@ -38,9 +38,9 @@ public class Client {
         ObjectInputStream ois;
         Object result;
 
+        System.out.println("------ COLLAB REQUEST --------");
         System.out.println("Connecting to " + ipServer + "...");
         socket = new Socket(ipServer, port);
-        System.out.println("Connection Established.");
 
         oos = new ObjectOutputStream(socket.getOutputStream());
         ois = new ObjectInputStream(socket.getInputStream());
@@ -48,12 +48,13 @@ public class Client {
         System.out.println("Send Request...");
 
         oos.writeObject(collab);
-        System.out.println(" Wait for answer...");
+        System.out.println("Receive result...");
 
         result = ois.readObject();
 
 
-        System.out.println("End connection...");
+        System.out.println("Received ! End of connection.");
+        System.out.println("--------------");
 
         socket.close();
 
@@ -66,20 +67,25 @@ public class Client {
         Object[] params;
         Calc calc = new Calc();
 
-        System.out.println("0 for Addition, else will multiply...");
+        System.out.println("Choose a collab request to perform by typing the number :" +
+                "\n 1 - Addition 5 + 2" +
+                "\n 2 - Multiply 5 * 2" +
+                "\n Others - Quit");
         Scanner sc = new Scanner(System.in);
 
         int choice = sc.nextInt();
-        if (choice == 1) {
-            methodName = "add";
-            params = new Object[]{"5", "2"};
-        }
-        else if (choice == 2) {
-            methodName = "multiply";
-            params = new Object[]{5f, 2f};
-        }
-        else {
-            return null;
+        switch(choice) {
+            case 1:
+                methodName = "add";
+                params = new Object[]{"5", "2"};
+                break;
+            case 2:
+                methodName = "multiply";
+                params = new Object[]{5f, 2f};
+                break;
+            default:
+                return null; //end choice
+
         }
 
         // -- MAKE REQUEST

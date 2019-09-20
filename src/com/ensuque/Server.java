@@ -49,7 +49,8 @@ public class Server {
         oos.writeObject(result);
 
 
-        System.out.println("End connection...");
+        System.out.println("End of connection...");
+        System.out.println("--------------");
 
         socket.close();
     }
