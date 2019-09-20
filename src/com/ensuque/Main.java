@@ -13,19 +13,17 @@ public class Main {
 
         String methodName;
         Object[] params;
-
         Calc calc = new Calc();
 
+        // -- TEST LOCAL
         System.out.println("5 + 2 = " + calc.add("5", "2"));
         System.out.println("5 * 2 = " + calc.multiply(5f, 2f));
 
+        // -- START CHOICE
         System.out.println("Now with request...");
 
-        printMethods(calc);
         System.out.println("0 for Addition, else will multiply...");
         Scanner sc = new Scanner(System.in);
-
-
         int choice = sc.nextInt();
         if (choice == 0) {
             methodName = "add";
@@ -36,10 +34,11 @@ public class Main {
             params = new Object[]{5f, 2f};
         }
 
+        // -- MAKE REQUEST
         CollabRequest<Calc> collab;
         try {
 
-            collab = new CollabRequest<Calc>(
+            collab = new CollabRequest<>(
                     calc,
                     methodName,
                     params);
@@ -48,7 +47,8 @@ public class Main {
             return;
         }
 
-        System.out.println("Result = " + collab.Run());
+
+        System.out.println("Result = " + collab.run());
 
         System.out.println("Done!");
 

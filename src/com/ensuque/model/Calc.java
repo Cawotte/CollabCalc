@@ -1,7 +1,9 @@
 package com.ensuque.model;
 
 
-public class Calc {
+import java.io.Serializable;
+
+public class Calc implements Serializable {
     public int add(String a, String b){
         int x = Integer.parseInt(a);
         int y = Integer.parseInt(b);

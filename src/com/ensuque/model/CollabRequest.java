@@ -4,32 +4,27 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class CollabRequest<T> implements Serializable {
+public class CollabRequest<T extends Serializable> implements Serializable {
 
     private T obj;
-
-    private String methodName;
     private Object[] args;
+    private String methodName;
 
-    private Method method;
-    private Class<?>[] params;
 
 
     public CollabRequest(T obj, String methodName, Object[] args) throws NoSuchMethodException {
         this.obj = obj;
-        this.methodName = methodName;
         this.args = args;
+        this.methodName = methodName;
 
-        params = new Class[args.length];
+        Class<?>[] params = new Class[args.length];
         for (int i = 0; i < args.length; i++) {
             params[i] = args[i].getClass();
-            System.out.println(args[i].getClass().getName());
+            //System.out.println(args[i].getClass().getName());
         }
 
-
         try {
-            this.method = obj.getClass().getDeclaredMethod(methodName, params);
-
+            obj.getClass().getDeclaredMethod(methodName, params);
         }
         catch (NoSuchMethodException err) {
             System.out.println("La classe " + obj.getClass().getName() + " ne possède pas de méthode " + methodName + " !");
@@ -37,8 +32,9 @@ public class CollabRequest<T> implements Serializable {
         }
     }
 
-    public Object Run() {
+    public Object run() {
 
+        Method method = getMethod();
         try {
             return method.invoke(obj, args);
         } catch (IllegalAccessException ill) {
@@ -46,6 +42,24 @@ public class CollabRequest<T> implements Serializable {
             return null;
         } catch (InvocationTargetException ite) {
             System.out.println(ite.getStackTrace());
+            return null;
+        }
+    }
+
+
+    private Method getMethod() {
+
+        Class<?>[] params = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            params[i] = args[i].getClass();
+        }
+
+        try {
+            return obj.getClass().getDeclaredMethod(methodName, params);
+
+        }
+        catch (NoSuchMethodException err) {
+            System.out.println("La classe " + obj.getClass().getName() + " ne possède pas de méthode " + methodName + " !");
             return null;
         }
     }
