@@ -5,8 +5,6 @@ import com.ensuque.model.CollabRequest;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -18,10 +16,26 @@ public class Client {
         int port = 1700;
         String ipServer = "127.0.0.1";
 
+
+        CollabRequest<?> collabRequest;
+        Object result;
+
+        collabRequest = chooseCollabRequest();
+
+        while (collabRequest != null) {
+            result = sendAndReceiveCollabRequest(collabRequest, ipServer, port);
+            System.out.println("Result = " + result.toString());
+            collabRequest = chooseCollabRequest();
+        }
+    }
+
+    private static Object sendAndReceiveCollabRequest(CollabRequest collab, String ipServer, int port)
+                                                    throws Exception
+    {
+
         Socket socket;
         ObjectOutputStream oos;
         ObjectInputStream ois;
-        CollabRequest<?> collabRequest;
         Object result;
 
         System.out.println("Connecting to " + ipServer + "...");
@@ -31,24 +45,19 @@ public class Client {
         oos = new ObjectOutputStream(socket.getOutputStream());
         ois = new ObjectInputStream(socket.getInputStream());
 
-        System.out.println("Creating CollabRequest...");
-
-
-        collabRequest = chooseCollabRequest();
-
         System.out.println("Send Request...");
 
-        oos.writeObject(collabRequest);
+        oos.writeObject(collab);
         System.out.println(" Wait for answer...");
 
         result = ois.readObject();
 
 
-        System.out.println("Result = " + result.toString());
-
         System.out.println("End connection...");
 
         socket.close();
+
+        return result;
     }
 
     private static CollabRequest chooseCollabRequest() {
@@ -61,13 +70,16 @@ public class Client {
         Scanner sc = new Scanner(System.in);
 
         int choice = sc.nextInt();
-        if (choice == 0) {
+        if (choice == 1) {
             methodName = "add";
             params = new Object[]{"5", "2"};
         }
-        else {
+        else if (choice == 2) {
             methodName = "multiply";
             params = new Object[]{5f, 2f};
+        }
+        else {
+            return null;
         }
 
         // -- MAKE REQUEST

@@ -10,18 +10,26 @@ import java.net.Socket;
 public class Server {
 
 
+    private static ServerSocket serverSocket;
 
     public static void main(String[] args) throws Exception {
 
-
         int port = 1700;
-        ServerSocket serverSocket;
+
+        serverSocket = new ServerSocket(port);
+
+        while (true) {
+            receiveAndRunCollabRequest();
+        }
+    }
+
+    public static void receiveAndRunCollabRequest() throws Exception {
+
         Socket socket;
         ObjectOutputStream oos;
         ObjectInputStream ois;
 
-        serverSocket = new ServerSocket(port);
-        System.out.println("Waiting for a client..s.");
+        System.out.println("Waiting for a client...");
         socket = serverSocket.accept(); //wait for client
         System.out.println("Connection Established.");
 
@@ -31,7 +39,6 @@ public class Server {
         System.out.println("Waiting for CollabRequest...");
         CollabRequest<?> collabRequest = (CollabRequest)ois.readObject();
         System.out.println("CollabRequest Received...");
-
 
         Object result = collabRequest.run();
 
@@ -47,9 +54,5 @@ public class Server {
         socket.close();
     }
 
-    public static CollabRequest receiveCollabRequest() {
-
-        return null;
-    }
 
 }
