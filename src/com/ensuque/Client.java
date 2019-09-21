@@ -1,7 +1,7 @@
 package com.ensuque;
 
-import com.ensuque.model.Calc;
-import com.ensuque.model.CollabRequest;
+import com.ensuque.collab.CollabRequest;
+import com.ensuque.collab.CollabResult;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,27 +16,33 @@ public class Client {
         int port = 1700;
         String ipServer = "127.0.0.1";
 
+        //localhost 127.0.0.1
+        //Fabien 192.168.0.128
+        //Elie 192.168.0.185
+
+        //System.out.println(InetAddress.getLocalHost().getHostAddress());
+        //System.out.println(InetAddress.getLocalHost().getHostName());
 
         CollabRequest<?> collabRequest;
-        Object result;
+        CollabResult result;
 
         collabRequest = chooseCollabRequest();
 
         while (collabRequest != null) {
             result = sendAndReceiveCollabRequest(collabRequest, ipServer, port);
-            System.out.println("Result = " + result.toString());
+            System.out.println("Result = " + result.getResult().toString());
             collabRequest = chooseCollabRequest();
         }
     }
 
-    private static Object sendAndReceiveCollabRequest(CollabRequest collab, String ipServer, int port)
+    private static CollabResult sendAndReceiveCollabRequest(CollabRequest collab, String ipServer, int port)
                                                     throws Exception
     {
 
         Socket socket;
         ObjectOutputStream oos;
         ObjectInputStream ois;
-        Object result;
+        CollabResult result;
 
         System.out.println("------ COLLAB REQUEST --------");
         System.out.println("Connecting to " + ipServer + "...");
@@ -50,7 +56,7 @@ public class Client {
         oos.writeObject(collab);
         System.out.println("Receive result...");
 
-        result = ois.readObject();
+        result = (CollabResult)ois.readObject();
 
 
         System.out.println("Received ! End of connection.");
@@ -92,11 +98,11 @@ public class Client {
         CollabRequest<Calc> collab;
         try {
 
-            collab = new CollabRequest<Calc>(
+            collab = new CollabRequest<>(
                     calc,
                     methodName,
                     params);
-        } catch (NoSuchMethodException err) {
+        } catch (Exception err) {
             System.out.println(err.getStackTrace());
             return null;
         }

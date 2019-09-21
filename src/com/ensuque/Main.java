@@ -1,7 +1,6 @@
 package com.ensuque;
 
-import com.ensuque.model.Calc;
-import com.ensuque.model.CollabRequest;
+import com.ensuque.collab.CollabRequest;
 
 import java.lang.reflect.Method;
 import java.util.Scanner;
@@ -42,7 +41,7 @@ public class Main {
                     calc,
                     methodName,
                     params);
-        } catch (NoSuchMethodException err) {
+        } catch (Exception err) {
             System.out.println(err.getStackTrace());
             return;
         }

@@ -1,6 +1,6 @@
 package com.ensuque;
 
-import com.ensuque.model.CollabRequest;
+import com.ensuque.collab.CollabRequest;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
