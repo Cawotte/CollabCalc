@@ -19,11 +19,11 @@ public class CollabResult implements Serializable {
     //The raised exception if the method did not execute properly.
     private Exception error;
 
-    CollabResult(Object result, boolean isSuccess) {
+    public CollabResult(Object result, boolean isSuccess) {
         this(result, isSuccess, null);
     }
 
-    CollabResult(Object result, boolean isSuccess, Exception err) {
+    public CollabResult(Object result, boolean isSuccess, Exception err) {
         this.result = result;
         this.isSuccess = isSuccess;
         this.error = err;
