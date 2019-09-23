@@ -18,7 +18,7 @@ public class AutoClient extends Client {
         ArrayList<CollabRequest> collabRequests = new ArrayList<>();
 
         //Fill the array with examples to test the CollabRequests
-        setupExemples(collabRequests);
+        setupExamples(collabRequests);
 
         //Perform all requests
         for (int i = 0; i < collabRequests.size(); i++) {
@@ -28,14 +28,14 @@ public class AutoClient extends Client {
             System.out.println("\nTest #" + (i+1));
             System.out.println("CollabRequest : " + request.toString());
 
-            CollabResult result = sendAndReceiveCollabRequest(request, ipServer, port, false);
+            CollabResponse result = sendAndReceiveCollabRequest(request, ipServer, port, false);
 
             showResult(result);
         }
 
     }
 
-    private static void setupExemples(ArrayList<CollabRequest> requests) {
+    private static void setupExamples(ArrayList<CollabRequest> requests) {
 
         Calc calc = new Calc();
 

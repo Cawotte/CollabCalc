@@ -41,21 +41,21 @@ public class CollabRequest<T extends Serializable> implements Serializable {
     }
 
     /**
-     * Run the CollabRequest's method and returns the result within a CollabResult object.
+     * Run the CollabRequest's method and returns the result within a CollabResponse object.
      * @return
      */
-    public CollabResult run() {
+    public CollabResponse run() {
 
-        CollabResult cr;
+        CollabResponse cr;
 
         try {
             Method method = getMethod();
 
-            cr = new CollabResult(
+            cr = new CollabResponse(
                     method.invoke(obj, args),
                     true);
         } catch (Exception err) {
-            cr = new CollabResult(
+            cr = new CollabResponse(
                     null,
                     false,
                     err);

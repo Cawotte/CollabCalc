@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Encapsulate the result of a CollabRequest : The method's result,  if it's has been successfully executed,
+ * Encapsulate the result of a CollabResponse : The method's result,  if it's has been successfully executed,
  * and the raised exception if it wasn't the case.
  */
-public class CollabResult implements Serializable {
+public class CollabResponse implements Serializable {
 
     //Result of the executed method
     //Note : A null object DOESN'T mean the execution failed.
@@ -19,11 +19,11 @@ public class CollabResult implements Serializable {
     //The raised exception if the method did not execute properly.
     private Exception error;
 
-    public CollabResult(Object result, boolean isSuccess) {
+    public CollabResponse(Object result, boolean isSuccess) {
         this(result, isSuccess, null);
     }
 
-    public CollabResult(Object result, boolean isSuccess, Exception err) {
+    public CollabResponse(Object result, boolean isSuccess, Exception err) {
         this.result = result;
         this.isSuccess = isSuccess;
         this.error = err;

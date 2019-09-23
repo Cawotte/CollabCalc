@@ -5,9 +5,7 @@ import com.ensuque.collab.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
@@ -26,7 +24,7 @@ public class Client {
 
 
         CollabRequest<?> collabRequest;
-        CollabResult result;
+        CollabResponse result;
 
         collabRequest = chooseCollabRequest();
 
@@ -40,7 +38,7 @@ public class Client {
         }
     }
 
-    protected static void showResult(CollabResult result) {
+    protected static void showResult(CollabResponse result) {
         if (result.isSuccessful()) {
             System.out.println("Result received : " + result.getResult().toString());
         }
@@ -49,15 +47,15 @@ public class Client {
             result.printError();
         }
     }
-    protected static CollabResult sendAndReceiveCollabRequest(CollabRequest collab, String ipServer, int port,
-                                                              boolean verbose)
+    protected static CollabResponse sendAndReceiveCollabRequest(CollabRequest collab, String ipServer, int port,
+                                                                boolean verbose)
                                                     throws Exception
     {
 
         Socket socket;
         ObjectOutputStream oos;
         ObjectInputStream ois;
-        CollabResult result;
+        CollabResponse result;
 
         if (verbose)
             System.out.println("---- Sending New CollabRequest ----");
@@ -71,11 +69,11 @@ public class Client {
         if (verbose)
             System.out.println("CollabRequest sent.");
 
-        result = (CollabResult)ois.readObject();
+        result = (CollabResponse)ois.readObject();
 
 
         if (verbose)
-            System.out.println("CollabRequest received ! End of connection.");
+            System.out.println("CollabResponse received ! End of connection.");
 
         socket.close();
 

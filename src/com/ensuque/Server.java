@@ -41,7 +41,7 @@ public class Server {
 
     /**
      * Wait that a Client connects to the server and send a CollabRequest, then perform it and send back the result
-     * to the client as a CollabResult before ending the connection.
+     * to the client as a CollabResponse before ending the connection.
      * @throws IOException
      */
     private static void receiveAndRunCollabRequest() throws IOException {
@@ -59,7 +59,7 @@ public class Server {
         oos = new ObjectOutputStream(socket.getOutputStream());
         ois = new ObjectInputStream(socket.getInputStream());
 
-        CollabResult result;
+        CollabResponse result;
 
         try {
 
@@ -69,24 +69,24 @@ public class Server {
             System.out.println("CollabRequest received from " + socket.getInetAddress().toString() + " / " + socket.getPort());
             System.out.println(collabRequest.toString());
 
-            //Execute it and obtain a CollabResult with the result of the calculation.
+            //Execute it and obtain a CollabResponse with the result of the calculation.
             result = collabRequest.run();
 
             System.out.println("CollabRequest performed.");
 
         } catch (ClassNotFoundException err) {
-            //If there's an error, returns an empty CollabResult containing the error.
+            //If there's an error, returns an empty CollabResponse containing the error.
             System.out.println(err.toString());
-            result = new CollabResult(null, false, err);
+            result = new CollabResponse(null, false, err);
         } catch (ClassCastException cce) {
-            //If there's an error, returns an empty CollabResult containing the error.
+            //If there's an error, returns an empty CollabResponse containing the error.
             System.out.println("The received object is not of type CollabRequest!");
-            result = new CollabResult(null, false, cce);
+            result = new CollabResponse(null, false, cce);
         }
 
         oos.writeObject(result);
 
-        System.out.println("CollabResult sent, end of connection.");
+        System.out.println("CollabResponse sent, end of connection.");
 
         socket.close();
     }
