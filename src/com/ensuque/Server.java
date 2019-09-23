@@ -1,6 +1,6 @@
 package com.ensuque;
 
-import com.ensuque.collab.CollabRequest;
+import com.ensuque.collab.*;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,41 +16,47 @@ public class Server {
 
         int port = 1700;
 
+        //Start the server
         serverSocket = new ServerSocket(port);
 
+        System.out.println("Server is launched on " + serverSocket.getLocalSocketAddress().toString());
+        System.out.println("Waiting for clients to perform CollabRequests...");
+
+        //Wait for CollabRequests to perform.
         while (true) {
             receiveAndRunCollabRequest();
         }
     }
 
+    /**
+     * Wait that a Client connects to the server and send a CollabRequest, then perform it and send back the result
+     * to the client as a CollabResult before ending the connection.
+     * @throws Exception
+     */
     public static void receiveAndRunCollabRequest() throws Exception {
 
         Socket socket;
         ObjectOutputStream oos;
         ObjectInputStream ois;
 
-        System.out.println("Waiting for a client...");
         socket = serverSocket.accept(); //wait for client
-        System.out.println("Connection Established.");
+
+        System.out.println("--------------");
 
         oos = new ObjectOutputStream(socket.getOutputStream());
         ois = new ObjectInputStream(socket.getInputStream());
 
-        System.out.println("Waiting for CollabRequest...");
         CollabRequest<?> collabRequest = (CollabRequest)ois.readObject();
-        System.out.println("CollabRequest Received...");
+        System.out.println("CollabRequest received from " + socket.getInetAddress().toString() + " / " + socket.getPort());
+        System.out.println(collabRequest.toString());
 
-        Object result = collabRequest.run();
+        CollabResult result = collabRequest.run();
 
-        System.out.println("Result = " + result.toString());
+        System.out.println("CollabRequest performed.");
 
-
-        System.out.println("Send Result...");
         oos.writeObject(result);
 
-
-        System.out.println("End of connection...");
-        System.out.println("--------------");
+        System.out.println("CollabResult sent, end of connection.");
 
         socket.close();
     }
