@@ -28,15 +28,9 @@ public class AutoClient extends Client {
             System.out.println("\nTest #" + (i+1));
             System.out.println("CollabRequest : " + request.toString());
 
-            CollabResult result = sendAndReceiveCollabRequest(request, ipServer, port);
+            CollabResult result = sendAndReceiveCollabRequest(request, ipServer, port, false);
 
-            if (result.isSuccessful()) {
-                System.out.println("Result received : " + result.getResult().toString());
-            }
-            else {
-                System.out.println("No result, an error has occurred : ");
-                result.printError();
-            }
+            showResult(result);
         }
 
     }
