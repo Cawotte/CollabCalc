@@ -1,4 +1,5 @@
-#CollabCalc
+
+# CollabCalc
 
 Small school project about using Java's Reflection to send an object over a network (TCP) 
 to a server that will execute a chosen method and reply with the result.
