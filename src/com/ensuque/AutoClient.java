@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class AutoClient extends Client {
 
-    protected static int port = 1800;
+    protected static int port = 1700;
     protected static String ipServer = "127.0.0.1";
 
     public static void main(String[] args) {
