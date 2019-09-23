@@ -66,7 +66,7 @@ public class Server {
             //Receive the CollabRequest from the client
             CollabRequest<?> collabRequest = (CollabRequest)ois.readObject();
 
-            System.out.println("CollabRequest received from " + socket.getInetAddress().toString() + " / " + socket.getPort());
+            System.out.println("CollabRequest received from " + socket.getInetAddress().toString() + ":" + socket.getPort());
             System.out.println(collabRequest.toString());
 
             //Execute it and obtain a CollabResponse with the result of the calculation.

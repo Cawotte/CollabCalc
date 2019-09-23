@@ -2,6 +2,7 @@ package com.ensuque;
 
 import com.ensuque.collab.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -9,11 +10,10 @@ import java.util.ArrayList;
  */
 public class AutoClient extends Client {
 
-    public static void main(String[] args) throws Exception {
+    protected static int port = 1800;
+    protected static String ipServer = "127.0.0.1";
 
-
-        int port = 1700;
-        String ipServer = "127.0.0.1";
+    public static void main(String[] args) {
 
         ArrayList<CollabRequest> collabRequests = new ArrayList<>();
 
@@ -28,9 +28,14 @@ public class AutoClient extends Client {
             System.out.println("\nTest #" + (i+1));
             System.out.println("CollabRequest : " + request.toString());
 
-            CollabResponse result = sendAndReceiveCollabRequest(request, ipServer, port, false);
+            try {
+                CollabResponse result = sendAndReceiveCollabRequest(request, ipServer, port, false);
 
-            showResult(result);
+                showResult(result);
+            } catch (IOException err) {
+                System.out.println("Connection error ! Request aborted...");
+                System.out.println(err.toString());
+            }
         }
 
     }

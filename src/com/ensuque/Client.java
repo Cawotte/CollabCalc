@@ -2,6 +2,7 @@ package com.ensuque;
 
 import com.ensuque.collab.*;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -12,50 +13,64 @@ public class Client {
 
     private static boolean toQuit = false;
 
-    public static void main(String[] args) throws Exception {
+    protected static int port = 1700;
+    protected static String ipServer = "127.0.0.1";
 
+    //localhost 127.0.0.1
+    //Fabien 192.168.0.128
+    //Elie 192.168.0.185
 
-        int port = 1700;
-        String ipServer = "127.0.0.1";
-
-        //localhost 127.0.0.1
-        //Fabien 192.168.0.128
-        //Elie 192.168.0.185
+    public static void main(String[] args) {
 
 
         CollabRequest<?> collabRequest;
-        CollabResponse result;
+        CollabResponse response;
 
+        //Ask the user to choose a CollabRequest to perform
         collabRequest = chooseCollabRequest();
 
+        //While the client hasn't asked to quit
         while (!toQuit) {
 
             if (collabRequest != null) {
-                result = sendAndReceiveCollabRequest(collabRequest, ipServer, port, true);
-                showResult(result);
+
+                try {
+                    //Send a collabRequest and wait its response
+                    response = sendAndReceiveCollabRequest(collabRequest, ipServer, port, true);
+                    showResult(response);
+                } catch (IOException err) {
+                    System.out.println("Connection error with server! Connection aborted.");
+                    System.out.println(err.toString());
+                }
             }
+
             collabRequest = chooseCollabRequest();
         }
+
+        System.out.println("Quitting...");
     }
 
-    protected static void showResult(CollabResponse result) {
-        if (result.isSuccessful()) {
-            System.out.println("Result received : " + result.getResult().toString());
+    //region Protected Methods
+    protected static void showResult(CollabResponse response) {
+        if (response == null) {
+            System.out.println("CollabResponse is null!");
+        }
+        else if (response.isSuccessful()) {
+            System.out.println("Result received : " + response.getResult().toString());
         }
         else {
-            System.out.println("No result, an error has occurred : ");
-            result.printError();
+            System.out.println("No response, an error has occurred : ");
+            response.printError();
         }
     }
     protected static CollabResponse sendAndReceiveCollabRequest(CollabRequest collab, String ipServer, int port,
-                                                                boolean verbose)
-                                                    throws Exception
+                                                                boolean verbose) throws IOException
     {
 
         Socket socket;
         ObjectOutputStream oos;
         ObjectInputStream ois;
-        CollabResponse result;
+        CollabResponse response;
 
         if (verbose)
             System.out.println("---- Sending New CollabRequest ----");
@@ -69,7 +84,15 @@ public class Client {
         if (verbose)
             System.out.println("CollabRequest sent.");
 
-        result = (CollabResponse)ois.readObject();
+        try {
+            response = (CollabResponse)ois.readObject();
+        } catch (ClassNotFoundException err) {
+            System.out.println("Error while receiving the response :");
+            System.out.println(err.toString());
+
+            socket.close();
+            return null;
+        }
 
 
         if (verbose)
@@ -77,11 +100,11 @@ public class Client {
 
         socket.close();
 
-        return result;
+        return response;
     }
 
     /**
-     * Instantiate a CollabRequest with the given parameters and returns it. If an exception is raised, prints it.
+     * Instantiate a CollabRequest with the given parameters and returns it. If an exception is raised, handles and prints it.
      * @param obj
      * @param methodName
      * @param args
@@ -98,6 +121,12 @@ public class Client {
         }
     }
 
+    //endregion
+
+    /**
+     * Print a CollabRequest choice and makes the user input its method choice and the value of its parameters.
+     * @return
+     */
     private static CollabRequest chooseCollabRequest() {
 
         String methodName;
@@ -122,7 +151,7 @@ public class Client {
             }
         }
 
-        //Takes user's input for the request
+        //Choose the method's parameters (user inputs)
         switch(choice) {
             case 1:
                 methodName = "add";
