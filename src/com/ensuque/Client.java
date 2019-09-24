@@ -36,7 +36,7 @@ public class Client {
 
                 try {
                     //Send a collabRequest and wait its response
-                    response = sendAndReceiveCollabRequest(collabRequest, ipServer, port, true);
+                    response = sendAndReceiveCollab(collabRequest, ipServer, port, true);
                     showResult(response);
                 } catch (IOException err) {
                     System.out.println("Connection error with server! Connection aborted.");
@@ -51,6 +51,11 @@ public class Client {
     }
 
     //region Protected Methods
+
+    /**
+     * Print the CollabResponse info : The result if it's successful, or the exception if there was one.
+     * @param response
+     */
     protected static void showResult(CollabResponse response) {
         if (response == null) {
             System.out.println("CollabResponse is null!");
@@ -63,8 +68,18 @@ public class Client {
             response.printError();
         }
     }
-    protected static CollabResponse sendAndReceiveCollabRequest(CollabRequest collab, String ipServer, int port,
-                                                                boolean verbose) throws IOException
+
+    /**
+     * Send a CollabRequest to a distant server, wait for a CollabResponse reply, and returns it.
+     * @param collab
+     * @param ipServer
+     * @param port
+     * @param verbose
+     * @return CollabResponse sent by server.
+     * @throws IOException
+     */
+    protected static CollabResponse sendAndReceiveCollab(CollabRequest collab, String ipServer, int port,
+                                                         boolean verbose) throws IOException
     {
 
         Socket socket;
@@ -74,19 +89,27 @@ public class Client {
 
         if (verbose)
             System.out.println("---- Sending New CollabRequest ----");
+
+        //Connect to server
         socket = new Socket(ipServer, port);
 
+        //Setup streams
         oos = new ObjectOutputStream(socket.getOutputStream());
         ois = new ObjectInputStream(socket.getInputStream());
 
+        //Send CollabRequest
         oos.writeObject(collab);
 
         if (verbose)
             System.out.println("CollabRequest sent.");
 
         try {
+
+            //Wait for CollabResponse reply
             response = (CollabResponse)ois.readObject();
+
         } catch (ClassNotFoundException err) {
+            //Error when receiving, returns null.
             System.out.println("Error while receiving the response :");
             System.out.println(err.toString());
 
@@ -98,6 +121,7 @@ public class Client {
         if (verbose)
             System.out.println("CollabResponse received ! End of connection.");
 
+        //End connection
         socket.close();
 
         return response;

@@ -12,9 +12,10 @@ public class Server {
 
     private static ServerSocket serverSocket;
 
+    private static int port = 1700;
+
     public static void main(String[] args) {
 
-        int port = 1700;
 
         //Start the server
         try {
@@ -29,10 +30,14 @@ public class Server {
 
         //Wait for CollabRequests to perform.
         while (true) {
+
             try {
+
+                //Make the user choose a request, send it to server, receive a result and display it.
                 receiveAndRunCollabRequest();
+
             } catch (IOException ioe) {
-                System.out.println("Erreur de connection avec un client!");
+                System.out.println("Connection error with the client!");
                 System.out.println(ioe.toString());
                 ioe.printStackTrace();
             }
@@ -59,7 +64,7 @@ public class Server {
         oos = new ObjectOutputStream(socket.getOutputStream());
         ois = new ObjectInputStream(socket.getInputStream());
 
-        CollabResponse result;
+        CollabResponse response;
 
         try {
 
@@ -70,21 +75,22 @@ public class Server {
             System.out.println(collabRequest.toString());
 
             //Execute it and obtain a CollabResponse with the result of the calculation.
-            result = collabRequest.run();
+            response = collabRequest.run();
 
             System.out.println("CollabRequest performed.");
 
         } catch (ClassNotFoundException err) {
-            //If there's an error, returns an empty CollabResponse containing the error.
+            //If there was an error, returns an empty CollabResponse containing the error.
             System.out.println(err.toString());
-            result = new CollabResponse(null, false, err);
+            response = new CollabResponse(null, false, err);
         } catch (ClassCastException cce) {
             //If there's an error, returns an empty CollabResponse containing the error.
             System.out.println("The received object is not of type CollabRequest!");
-            result = new CollabResponse(null, false, cce);
+            response = new CollabResponse(null, false, cce);
         }
 
-        oos.writeObject(result);
+        //Send response to client.
+        oos.writeObject(response);
 
         System.out.println("CollabResponse sent, end of connection.");
 

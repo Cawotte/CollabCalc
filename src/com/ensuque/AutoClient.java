@@ -29,10 +29,12 @@ public class AutoClient extends Client {
             System.out.println("CollabRequest : " + request.toString());
 
             try {
-                CollabResponse result = sendAndReceiveCollabRequest(request, ipServer, port, false);
+                //Send the request and wait for the result.
+                CollabResponse result = sendAndReceiveCollab(request, ipServer, port, false);
 
                 showResult(result);
-            } catch (IOException err) {
+
+            } catch (IOException err) { //Connection errors
                 System.out.println("Connection error ! Request aborted...");
                 System.out.println(err.toString());
             }
@@ -40,6 +42,10 @@ public class AutoClient extends Client {
 
     }
 
+    /**
+     * Fill the given CollabRequest list with several predefinied use cases.
+     * @param requests
+     */
     private static void setupExamples(ArrayList<CollabRequest> requests) {
 
         Calc calc = new Calc();
@@ -90,6 +96,13 @@ public class AutoClient extends Client {
 
     }
 
+    /**
+     * Generate a CollabRequest with the given parameters, and if it's valid (no thrown exception), add it to the given list.
+     * @param requests List of request to add the new CollabRequest.
+     * @param obj
+     * @param methodName
+     * @param args
+     */
     private static void tryAddingCollabRequest(ArrayList<CollabRequest> requests, Object obj, String methodName, Object[] args) {
         CollabRequest request = tryCreatingCollabRequest(obj, methodName, args);
         if (request != null) {

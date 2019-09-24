@@ -27,12 +27,13 @@ public class CollabRequest<T extends Serializable> implements Serializable {
         this.methodName = methodName;
 
         try {
-            //Verify if a method with those name and arguments exists and if it's serializable
+            //Verify if a method with those name and arguments exists
             Method method = getMethod();
 
+            //and if its return type is serializable
             if ( !isSerializable(method.getReturnType()) )
             {
-                throw new InvalidReturnType("Le type de retour " + method.getReturnType().toString() + " de la méthode " + methodName + " n'est pas Serializable");
+                throw new InvalidReturnType("The return type " + method.getReturnType().toString() + " of the method " + methodName + " is not serializable.");
             }
         }
         catch (NoSuchMethodException err) {
