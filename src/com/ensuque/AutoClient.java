@@ -15,6 +15,18 @@ public class AutoClient extends Client {
 
     public static void main(String[] args) {
 
+        try {
+            Calc calc = new Calc();
+            CollabRequest request = new CollabRequestClass(calc.getClass(), "add", new Object[]{"5", "10"});
+
+            CollabResponse response = request.run();
+            showResult(response);
+
+        } catch (Exception err) {
+            System.out.println(err.toString());
+            err.printStackTrace();
+        }
+
         ArrayList<CollabRequest> collabRequests = new ArrayList<>();
 
         //Fill the array with examples to test the CollabRequests
@@ -40,8 +52,12 @@ public class AutoClient extends Client {
             }
         }
 
+
     }
 
+    private static void setupClassExamples(ArrayList<CollabRequest> requests) {
+
+    }
     /**
      * Fill the given CollabRequest list with several predefinied use cases.
      * @param requests

@@ -64,8 +64,9 @@ public class Client {
             System.out.println("Result received : " + response.getResult().toString());
         }
         else {
-            System.out.println("No response, an error has occurred : ");
+            System.out.println("No result, an error has occurred : ");
             response.printError();
+            response.getError().printStackTrace();
         }
     }
 
@@ -134,10 +135,10 @@ public class Client {
      * @param args
      * @return
      */
-    protected static CollabRequest tryCreatingCollabRequest(Object obj, String methodName, Object[] args) {
+    protected static CollabRequestObject tryCreatingCollabRequest(Object obj, String methodName, Object[] args) {
 
         try {
-            return new CollabRequest<>((Serializable)obj, methodName, args);
+            return new CollabRequestObject<>((Serializable)obj, methodName, args);
         }
         catch (Exception err) {
             System.out.println("Exception when instantiating CollabRequest :\n\t" + err.toString());
