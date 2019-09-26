@@ -1,5 +1,6 @@
-package com.ensuque;
+package com.ensuque.network;
 
+import com.ensuque.testComputing.*;
 import com.ensuque.collab.*;
 
 import java.io.IOException;
@@ -16,15 +17,20 @@ public class Client {
     protected static int port = 1700;
     protected static String ipServer = "127.0.0.1";
 
+    protected static IStrategyCollabRequest strategyCollabRequest;
+    protected static Calc calc;
+
     //localhost 127.0.0.1
     //Fabien 192.168.0.128
     //Elie 192.168.0.185
 
     public static void main(String[] args) {
 
-
         CollabRequest<?> collabRequest;
         CollabResponse response;
+
+        strategyCollabRequest = new StrategyCollabRequestObject();
+        calc = new CalcSerializable();
 
         //Ask the user to choose a CollabRequest to perform
         collabRequest = chooseCollabRequest();
@@ -38,6 +44,7 @@ public class Client {
                     //Send a collabRequest and wait its response
                     response = sendAndReceiveCollab(collabRequest, ipServer, port, true);
                     showResult(response);
+
                 } catch (IOException err) {
                     System.out.println("Connection error with server! Connection aborted.");
                     System.out.println(err.toString());
@@ -66,7 +73,6 @@ public class Client {
         else {
             System.out.println("No result, an error has occurred : ");
             response.printError();
-            response.getError().printStackTrace();
         }
     }
 
@@ -111,8 +117,7 @@ public class Client {
 
         } catch (ClassNotFoundException err) {
             //Error when receiving, returns null.
-            System.out.println("Error while receiving the response :");
-            System.out.println(err.toString());
+            System.out.println("Error while receiving the response :\n\t" + err.toString());
 
             socket.close();
             return null;
@@ -135,18 +140,20 @@ public class Client {
      * @param args
      * @return
      */
-    protected static CollabRequestObject tryCreatingCollabRequest(Object obj, String methodName, Object[] args) {
+    protected static CollabRequest tryCreatingCollabRequest(Object obj, String methodName, Object[] args) {
 
         try {
-            return new CollabRequestObject<>((Serializable)obj, methodName, args);
+            return strategyCollabRequest.instantiateCollabRequest(obj, methodName, args);
         }
         catch (Exception err) {
-            System.out.println("Exception when instantiating CollabRequest :\n\t" + err.toString());
+            System.out.println("CollabRequest instantiation exception : " + err.toString());
             return null;
         }
     }
 
     //endregion
+
+    //region User Inputs methods
 
     /**
      * Print a CollabRequest choice and makes the user input its method choice and the value of its parameters.
@@ -156,22 +163,28 @@ public class Client {
 
         String methodName;
         Object[] params;
-        Calc calc = new Calc();
+        int numChoices = 5;
 
+        String otherCalcName = calc.getClass().getSimpleName().equals("Calc") ? "CalcSerializable" : "Calc";
+        System.out.println("Current Calc Class : " + calc.getClass().getSimpleName());
+        System.out.println("Current CollabRequest Strategy : " + strategyCollabRequest.toString());
         System.out.println("Choose a CollabRequest to perform by typing the appropriate number :" +
                 "\n 1 - Addition" +
                 "\n 2 - Multiply" +
                 "\n 3 - Divide" +
+                "\n - - ------" +
+                "\n 4 - Change Strategy (" + strategyCollabRequest.nextStrategy().toString() + ")" +
+                "\n 5 - Change Calc Class (" + otherCalcName + ")" +
                 "\n 0 - Quit");
 
         Scanner sc = new Scanner(System.in);
         int choice = -1;
 
         //Select a choice
-        while (choice < 0 || choice > 3) {
+        while (choice < 0 || choice > numChoices) {
 
             choice = inputAnyInteger(sc);
-            if (choice < 0 || choice > 3) {
+            if (choice < 0 || choice > numChoices) {
                 System.out.println("Please enter a valid number.");
             }
         }
@@ -215,6 +228,15 @@ public class Client {
 
                 params = new Object[]{x1, y1};
                 break;
+            case 4:
+                //Change Strategy (Object or ByteCode class methods)
+                strategyCollabRequest = strategyCollabRequest.nextStrategy();
+                System.out.println("Strategy changed!");
+                return null;
+            case 5:
+                calc = calc.getClass().getSimpleName().equals("Calc") ? new CalcSerializable() : new Calc();
+                System.out.println("Calc Class changed!");
+                return null;
             default:
                 toQuit = true;
                 return null; //end choice
@@ -265,4 +287,58 @@ public class Client {
         return number;
     }
 
+    //endregion
+
 }
+
+//region Collab Request Strategy
+
+/**
+ * A Strategy design pattern is used to more easily switch between the Object and ByteCode methods for Collaborative Requests.
+ */
+
+interface IStrategyCollabRequest {
+    CollabRequest instantiateCollabRequest(Object obj, String methodName, Object[] args) throws Exception;
+
+    IStrategyCollabRequest nextStrategy();
+
+    String toString();
+}
+
+class StrategyCollabRequestObject implements IStrategyCollabRequest {
+
+    public CollabRequest instantiateCollabRequest(Object obj, String methodName, Object[] args)
+            throws Exception{
+        return new CollabRequestObject<>((Serializable)obj, methodName, args);
+    }
+
+    @Override
+    public IStrategyCollabRequest nextStrategy() {
+        return new StrategyCollabRequestBytecode();
+    }
+
+    @Override
+    public String toString() {
+        return "Object Strategy";
+    }
+}
+
+class StrategyCollabRequestBytecode implements IStrategyCollabRequest {
+
+    public CollabRequest instantiateCollabRequest(Object obj, String methodName, Object[] args)
+            throws Exception{
+        return new CollabRequestBytecode(obj.getClass(), methodName, args);
+    }
+
+    @Override
+    public IStrategyCollabRequest nextStrategy() {
+        return new StrategyCollabRequestObject();
+    }
+
+    @Override
+    public String toString() {
+        return "ByteCode Strategy";
+    }
+}
+
+//endregion

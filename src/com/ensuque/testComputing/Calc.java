@@ -1,11 +1,8 @@
-package com.ensuque;
+package com.ensuque.testComputing;
 
+public class Calc {
 
-import java.io.Serializable;
-
-public class Calc implements Serializable {
-
-    //A simple Calc class to test different use cases of the CollabRequests
+    //A simple CalcSerializable class to test different use cases of the CollabRequests
 
     public Integer add(String a, String b){
         int x = Integer.parseInt(a);
@@ -42,4 +39,3 @@ public class Calc implements Serializable {
     }
 
 }
-

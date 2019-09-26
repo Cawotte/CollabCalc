@@ -1,4 +1,4 @@
-package com.ensuque;
+package com.ensuque.network;
 
 import com.ensuque.collab.*;
 
